@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Loader2, ShoppingBag, Banknote, Truck, CheckCircle2 } from 'lucide-react';
 import { useShopStore } from '@/stores/shopStore';
-import { useSupabaseSession } from '@/context/SupabaseSessionProvider';
 import { useRetailCart } from '@/hooks/useRetailCart';
 import { Logo } from '@/components/shared/Logo';
 
@@ -19,12 +18,11 @@ interface ConfirmedOrder {
 export function CheckoutPageClient() {
   const { lineItems, subtotal, installationTotal, total, isLoading } = useRetailCart();
   const clearRetailCart = useShopStore((s) => s.clearRetailCart);
-  const { session } = useSupabaseSession();
 
   const [form, setForm] = useState({
     name: '',
     phone: '',
-    email: session?.user.email ?? '',
+    email: '',
     addressLine: '',
     city: '',
     postalCode: '',

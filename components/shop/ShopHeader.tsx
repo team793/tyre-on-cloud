@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { Store, Building2, ShoppingCart } from 'lucide-react';
 import { useShopStore } from '@/stores/shopStore';
 import { useRetailCart } from '@/hooks/useRetailCart';
-import { AuthControl } from '@/components/shared/AuthControl';
 
 export function ShopHeader() {
   const mode = useShopStore((s) => s.mode);
@@ -78,10 +77,6 @@ export function ShopHeader() {
               )}
             </button>
           )}
-
-          <div className="hidden sm:block">
-            <AuthControl theme={isDealer ? 'dark' : 'light'} />
-          </div>
         </div>
       </div>
     </div>

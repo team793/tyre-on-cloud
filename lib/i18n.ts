@@ -9,8 +9,6 @@ const translations = {
       shopNow: 'ซื้อยางเลย',
       menu: 'เมนู',
       close: 'ปิด',
-      signIn: 'เข้าสู่ระบบ',
-      signOut: 'ออกจากระบบ',
     },
     hero: {
       promo: '🔥 จัดส่งฟรีทั่วประเทศ เมื่อซื้อครบ 4 เส้น ถึงสิ้นเดือนนี้!',
@@ -123,8 +121,6 @@ const translations = {
       shopNow: 'Shop Tyres',
       menu: 'Menu',
       close: 'Close',
-      signIn: 'Sign in',
-      signOut: 'Sign out',
     },
     hero: {
       promo: '🔥 Free nationwide delivery on 4 or more tyres — this month only!',
@@ -232,10 +228,7 @@ const translations = {
 };
 
 export type Translations = {
-  nav: {
-    shop: string; dealers: string; contact: string; shopNow: string; menu: string; close: string;
-    signIn: string; signOut: string;
-  };
+  nav: { shop: string; dealers: string; contact: string; shopNow: string; menu: string; close: string };
   hero: {
     promo: string; promoCta: string; eyebrow: string; h1a: string; h1b: string;
     sub: string; cta: string; dealer: string; line: string; imageAlt: string;

@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { X, Menu } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { Logo } from '@/components/shared/Logo';
-import { AuthControl } from '@/components/shared/AuthControl';
 
 function LineIcon({ size = 20 }: { size?: number }) {
   return (
@@ -72,7 +71,6 @@ export function Navbar() {
           {/* Desktop right cluster */}
           <div className="hidden items-center gap-3 md:flex">
             <LanguageToggle />
-            <AuthControl />
             <a
               href="https://line.me/ti/p/@tirehub"
               target="_blank"
@@ -145,7 +143,6 @@ export function Navbar() {
           </nav>
 
           <div className="mt-auto flex flex-col gap-3 p-5">
-            <AuthControl onNavigate={() => setOpen(false)} fullWidth />
             <a
               href="https://line.me/ti/p/@tirehub"
               target="_blank"

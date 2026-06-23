@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { createClient } from '@/lib/supabase/server';
 
 const INSTALLATION_FEE_PER_TYRE = 25;
 
@@ -78,13 +77,10 @@ export async function POST(request: NextRequest) {
 
   const total = subtotal + installationTotal;
 
-  const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-
+  // No login/account system on this site — every order is a guest order.
   const order = await prisma.order.create({
     data: {
       orderNumber: generateOrderNumber(),
-      userId: userData.user?.id,
       customerName: c.name.trim(),
       customerPhone: c.phone.trim(),
       customerEmail: c.email?.trim() || null,

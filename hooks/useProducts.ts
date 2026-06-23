@@ -63,11 +63,8 @@ async function fetchProducts(filters: ProductQueryFilters) {
   const res = await fetch(`/api/products?${params.toString()}`);
   if (!res.ok) throw new Error('Failed to load products');
 
-  const json = await res.json() as { products: Record<string, unknown>[]; isDealer: boolean };
-  return {
-    products: json.products.map(mapProduct),
-    isDealer: json.isDealer,
-  };
+  const json = await res.json() as { products: Record<string, unknown>[] };
+  return { products: json.products.map(mapProduct) };
 }
 
 export interface UseProductsOptions {

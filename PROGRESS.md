@@ -27,7 +27,7 @@ Supabase project: https://supabase.com/dashboard/project/ognoyinorqkthcjcabiy
 | Dead code removed (`lib/utils.ts`, `lib/shop/mockData.ts` — both unused, zero imports) | ✅ Done |
 | Desktop folder decluttered — old flat-file extracts and demo `.jsx` drafts moved to `_archive/` | ✅ Done |
 | Dealer matrix mobile redesign — card layout below `lg`, table unchanged at `lg`+ | ✅ Done |
-| User auth UI wired up — sign in/out, role-based dealer-mode gating | ✅ Done |
+| Login/account system removed entirely — site is catalog-only, LINE OA handles sales | ✅ Done |
 | Product image plumbing — real photo support + brand-tinted icon placeholder | ✅ Done |
 | SEO basics — sitemap.xml, robots.txt, canonical/OG/Twitter metadata, dynamic OG image | ✅ Done |
 | Retail cart & checkout — bank transfer / COD, orders saved to DB | ✅ Done |
@@ -143,17 +143,14 @@ node scripts/import-stock.mjs "C:\Users\WINDOWS 11\Desktop\tyre on cloud\stock d
 ```
 Uses `ON CONFLICT (sku) DO UPDATE` — safe to re-run.
 
-### 3. Set Up User Authentication (Customer + Dealer Login) — ✅ Done (2026-06-23)
-Backend (RLS, `profiles.role`, role-aware `/api/products`) already existed from an earlier session but was never wired to the UI. This session finished the loop:
-- `context/SupabaseSessionProvider.tsx` now also resolves and exposes `role` (fetched from `profiles`, server-prefetched in `app/layout.tsx` to avoid a flash of logged-out UI) plus a `signOut()` helper.
-- New shared `components/shared/AuthControl.tsx` (sign-in link / sign-out button) is wired into both `Navbar.tsx` (landing page) and `ShopHeader.tsx` (shop page, light/dark themed).
-- `/shop?mode=dealer` is now actually gated in `components/shop/ShopPageClient.tsx`: anonymous visitors are redirected to `/auth?next=/shop?mode=dealer`; logged-in non-dealers see the new `components/shop/DealerAccessGate.tsx` (LINE contact CTA) instead of the matrix; real dealers see `DealerMatrix` as before.
-- `app/auth/page.tsx` now reads a `next` redirect target and routes signed-in users by role (dealer → dealer mode, customer → customer mode) unless `next` says otherwise.
-- New users get `profiles.role = 'customer'` automatically; promote to dealer via:
-  ```sql
-  UPDATE public.profiles SET role = 'dealer' WHERE email = 'dealer@example.com';
-  ```
-- Verified end-to-end with Playwright + a throwaway Supabase test user (created/promoted/deleted via the admin API): anon redirect, customer gate, dealer access after promotion, and sign-out all confirmed working.
+### 3. User Authentication — built, then deliberately removed (2026-06-23)
+Auth (sign in/up, role-gated dealer mode) was built earlier this session, then the owner reversed that decision: **this site is a product catalog/showcase that drives customers to LINE OA for the actual sale — not a transactional app, so no login/account system at all.** Forcing signup before browsing Dealer mode was bad UX for that model. Removed entirely:
+- Deleted `app/auth/` (page + callback route), `components/shared/AuthControl.tsx`, `components/shop/DealerAccessGate.tsx`, `context/SupabaseSessionProvider.tsx`, `lib/supabase/client.ts` + `server.ts`, and `proxy.ts` (middleware whose only job was refreshing a Supabase session that no longer exists).
+- `components/shop/ShopPageClient.tsx`: Dealer mode now renders `DealerMatrix` directly, same as Retail — no redirect, no gate.
+- `app/api/products/route.ts`: no more dealer/customer branching — always returns full data (`pricingTiers`, `inventory`/warehouse stock) to everyone, since there's no way to tell visitors apart anymore.
+- **Consequence to remember**: once real ERP prices load (TO-DO #1), the Dealer view's volume-pricing tiers will be publicly visible to any visitor, not just "dealers" — there's no access control left to bring back without rebuilding auth. Fine for now since those numbers are all ฿0 placeholders.
+- Backend Supabase Auth tables/RLS (`profiles`, `is_dealer()`, the `orders_select_own` policy, etc.) were deliberately left untouched in the database — removing schema is riskier than removing frontend code, and it costs nothing to leave unused. `/api/orders` now always creates guest orders (no `userId` lookup).
+- Build output changed nicely as a side effect: `/`, `/shop`, `/checkout` are now static pages (○) instead of dynamic (ƒ), since nothing depends on cookies/session at request time anymore.
 
 ### 4. Connect TyreFinder to Real Database — partially done
 Size-based search already queries the real DB live (`TyreFinder.tsx` → `hooks/useProducts.ts` → `/api/products?width=&profile=&rimSize=`, indexed Prisma columns, no migration needed). The old dead mock hook `hooks/useFilters.ts`'s `useMatchingTyres()` was removed (2026-06-23) — it had zero call sites. What's still genuinely mock: vehicle/plate lookup (`hooks/useTyreFinder.ts` + `lib/tyreFinder/fitmentData.ts`, 8 hardcoded vehicles / 3 plates) — needs a real vehicle-fitment dataset or external API (e.g. TecDoc, DVLA-style plate lookup). Medium-large effort, mostly external-data-source integration.

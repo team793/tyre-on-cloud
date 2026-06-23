@@ -2,10 +2,7 @@ import type { Metadata } from 'next';
 import { Space_Grotesk, Manrope, IBM_Plex_Mono } from 'next/font/google';
 import { MotionConfig } from 'framer-motion';
 import { QueryProvider } from '@/context/QueryProvider';
-import { SupabaseSessionProvider } from '@/context/SupabaseSessionProvider';
 import { LanguageProvider } from '@/context/LanguageContext';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { SITE_URL } from '@/lib/site';
 import './globals.css';
 
@@ -54,34 +51,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies();
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll() {
-          // Layout is a Server Component; cookie writes happen in middleware
-        },
-      },
-    }
-  );
-
-  const { data: { session } } = await supabase.auth.getSession();
-
-  const initialRole = session
-    ? (await supabase.from('profiles').select('role').eq('id', session.user.id).single()).data?.role ?? null
-    : null;
-
   return (
     <html lang="th">
       <body
@@ -89,11 +63,9 @@ export default async function RootLayout({
       >
         <MotionConfig reducedMotion="user">
           <QueryProvider>
-            <SupabaseSessionProvider initialSession={session} initialRole={initialRole}>
-              <LanguageProvider>
-                {children}
-              </LanguageProvider>
-            </SupabaseSessionProvider>
+            <LanguageProvider>
+              {children}
+            </LanguageProvider>
           </QueryProvider>
         </MotionConfig>
       </body>

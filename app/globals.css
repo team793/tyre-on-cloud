@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Brand red — single CI color used site-wide ── */
+  --color-brand-50:  #fff1f2;
+  --color-brand-100: #ffe4e6;
+  --color-brand-200: #fecdd3;
+  --color-brand-400: #fb7185;
+  --color-brand-500: #ef4444;
+  --color-brand-600: #dc2626;
+  --color-brand-700: #b91c1c;
+  --color-brand-800: #991b1b;
+  --color-brand-900: #7f1d1d;
+
+  /* ── ember → now true red (was orange-red) ── */
+  --color-ember-500: #dc2626;
+  --color-ember-400: #ef4444;
+
+  /* ── Dark backgrounds (landing + dealer view) ── */
+  --color-ink-950: #15110f;
+  --color-ink-900: #1b1512;
+  --color-ink-850: #211a17;
+  --color-ink-700: #3a322c;
+
+  /* ── Text / surface ── */
+  --color-chalk-100: #f3ede3;
+  --color-chalk-300: #d8cfc2;
+  --color-steel-400: #8fa3ad;
+  --color-steel-600: #5c6f78;
+
+  /* ── Dealer accent (kept orange for B2B contrast) ── */
+  --color-dealer-500: #f97316;
+
+  /* ── Typography ── */
+  --font-display: var(--font-space-grotesk);
+  --font-body:    var(--font-manrope);
+  --font-mono:    var(--font-plex-mono);
+}
+
+/* Smooth scrolling */
+html { scroll-behavior: smooth; }
+
+/* LINE green used for the float button */
+.bg-line-green { background-color: #06C755; }
+.hover\:bg-line-green-dark:hover { background-color: #05b34e; }

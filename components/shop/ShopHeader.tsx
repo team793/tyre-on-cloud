@@ -33,7 +33,7 @@ export function ShopHeader() {
           </motion.div>
           <div className="min-w-0">
             <p className={`text-sm font-bold leading-tight ${isDealer ? 'text-white' : 'text-gray-900'}`}>
-              {isDealer ? 'B2B Authorized Dealer Matrix' : 'Tyre on Cloud'}
+              Tyre on Cloud
             </p>
             <p className={`text-xs leading-tight ${isDealer ? 'text-slate-400' : 'text-gray-500'}`}>
               {isDealer ? 'Wholesale pricing & bulk fulfillment' : 'Shop tyres for your vehicle'}

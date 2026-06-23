@@ -31,6 +31,10 @@ Supabase project: https://supabase.com/dashboard/project/ognoyinorqkthcjcabiy
 | Product image plumbing — real photo support + brand-tinted icon placeholder | ✅ Done |
 | SEO basics — sitemap.xml, robots.txt, canonical/OG/Twitter metadata, dynamic OG image | ✅ Done |
 | Retail cart & checkout — bank transfer / COD, orders saved to DB | ✅ Done |
+| GitHub repo created + connected to Vercel for auto-deploy on push | ✅ Done |
+| 15 stale `tirehub-*` Vercel deployments + 2 old aliases deleted (pre-rename leftovers) | ✅ Done |
+| Dealer header now says "Tyre on Cloud" (was "B2B Authorized Dealer Matrix") | ✅ Done |
+| Hero brand banner card fixed — was clipping content on short mobile viewports | ✅ Done |
 
 ### Components
 
@@ -57,12 +61,14 @@ Supabase project: https://supabase.com/dashboard/project/ognoyinorqkthcjcabiy
 ---
 
 ## Tech Stack
-- **Framework:** Next.js 16 (App Router, `proxy.ts` convention), React 19, TypeScript
+- **Framework:** Next.js 16 (App Router), React 19, TypeScript
 - **Styling:** Tailwind CSS v4 (CSS-first `@theme` tokens in `globals.css`)
 - **Animation:** Framer Motion
 - **State:** Zustand v5 (`useShopStore`, `useFilterStore`)
-- **Data:** TanStack Query v5 + Supabase + Prisma (489 real products)
+- **Data:** TanStack Query v5 + Supabase (DB only, no Auth) + Prisma (489 real products)
 - **i18n:** Custom (`lib/i18n.ts` + `LanguageContext`)
+- **No login/auth system** — removed deliberately 2026-06-23, see TO-DO #3. No middleware/`proxy.ts` either (its only job was refreshing a session that no longer exists).
+- **Git:** GitHub repo `team793/tyre-on-cloud`, connected to Vercel for auto-deploy on push to `master`.
 
 ---
 
@@ -72,31 +78,38 @@ Supabase project: https://supabase.com/dashboard/project/ognoyinorqkthcjcabiy
 C:\Users\WINDOWS 11\Desktop\tyre on cloud\
 ├── tirehub/                    ← the real, deployed project (everything below is inside here)
 │   ├── app/
-│   │   ├── layout.tsx          ← fonts, providers
+│   │   ├── layout.tsx          ← fonts, metadata, providers (no session/auth fetch anymore)
 │   │   ├── globals.css         ← Tailwind @theme tokens (colours, fonts)
 │   │   ├── page.tsx            ← landing page
-│   │   ├── shop/page.tsx       ← /shop route (B2C + B2B)
-│   │   └── api/products/route.ts ← reads from Supabase via Prisma
+│   │   ├── shop/page.tsx       ← /shop route (B2C + B2B, both open, no login)
+│   │   ├── checkout/page.tsx   ← retail checkout (bank transfer / COD)
+│   │   ├── sitemap.ts / robots.ts / opengraph-image.tsx ← SEO
+│   │   └── api/
+│   │       ├── products/route.ts ← reads from Supabase via Prisma (full data, no role check)
+│   │       └── orders/route.ts   ← creates orders server-side, recomputes prices, guest-only
 │   ├── components/
-│   │   ├── landing/            ← Hero, TyreVisualizer, SocialProofBento, SidewallStampRing
-│   │   ├── shared/              ← Navbar, Footer, LineFloatingButton, Logo
+│   │   ├── landing/            ← Hero, HeroBrandBanner, FeaturedCatalog, TyreVisualizer
+│   │   ├── shared/              ← Navbar, Footer, LineFloatingButton, Logo, TyreThumbnail
 │   │   ├── tyre-finder/         ← TyreFinder.tsx (search by size / vehicle / plate)
-│   │   ├── shop/                ← ShopPageClient, RetailView, DealerMatrix, etc.
+│   │   ├── shop/                ← ShopPageClient, RetailView, DealerMatrix, DealerCard,
+│   │   │                          RetailCartDrawer, ShopHeader, MobileFilterSheet
+│   │   ├── checkout/             ← CheckoutPageClient.tsx
 │   │   └── ui/                  ← select, slider, tabs (shadcn-style primitives)
-│   ├── hooks/                   ← useProducts, useFilters, useTyreFinder
+│   ├── hooks/                   ← useProducts, useRetailCart, useFilters, useTyreFinder
 │   ├── stores/                  ← filterStore.ts, shopStore.ts (Zustand)
 │   ├── lib/
 │   │   ├── prisma.ts            ← Prisma client singleton
-│   │   ├── supabase/            ← client.ts / server.ts
+│   │   ├── site.ts              ← SITE_URL — update this when the custom domain attaches
 │   │   ├── shop/pricing.ts      ← price/margin/freight calculation helpers
 │   │   ├── shop/format.ts       ← display formatting helpers
-│   │   └── tyreFinder/fitmentData.ts ← tyre size cascade data
-│   ├── context/                 ← QueryProvider, SupabaseSessionProvider, LanguageContext
+│   │   └── tyreFinder/fitmentData.ts ← tyre size cascade data (still mock, see TO-DO #4)
+│   ├── context/                 ← QueryProvider, LanguageContext (no session provider anymore)
 │   ├── types/shop.ts             ← TyreProduct, WarehouseStock, PricingTier types
-│   ├── prisma/schema.prisma       ← database schema (Prisma)
-│   ├── supabase/migrations/0001_init.sql ← run once already — DO NOT run again
+│   ├── prisma/schema.prisma       ← database schema (Prisma) — includes Order/OrderItem models
+│   ├── supabase/migrations/       ← 0001_init.sql, 0002_rename_winter_to_rainy.sql,
+│   │                                 0003_orders.sql — all run already, DO NOT re-run
 │   ├── scripts/
-│   │   ├── migrate.mjs           ← ran once to create DB tables
+│   │   ├── migrate.mjs           ← node --env-file=.env.local scripts/migrate.mjs <file>
 │   │   └── import-stock.mjs      ← import ERP CSV → Supabase (re-run when stock changes)
 │   └── .env.local                ← real Supabase keys (DO NOT commit to git)
 ├── stock data/                   ← drop new ERP CSV exports here
@@ -163,7 +176,7 @@ All cards used to show a 🛞 emoji. `image_url` is still NULL for every product
 - `next.config.ts` already whitelists `*.supabase.co/storage/v1/object/public/**` for `next/image` — uploading photos to a **Supabase Storage public bucket** and running `UPDATE public.products SET image_url = '<storage public URL>' WHERE brand = '...'` (or per-SKU) will make them appear immediately, no code changes needed.
 
 ### 6. SEO & Metadata — ✅ Done (2026-06-23)
-- `app/sitemap.ts` (`/sitemap.xml`) and `app/robots.ts` (`/robots.txt`) added — `/auth` and `/api/` are disallowed (no SEO value; dealer mode isn't listed since it's now gated behind login).
+- `app/sitemap.ts` (`/sitemap.xml`) and `app/robots.ts` (`/robots.txt`) added — only `/api/` is disallowed (`/auth` no longer exists, see TO-DO #3).
 - `app/layout.tsx` and `app/shop/page.tsx` metadata now include `metadataBase`, `alternates.canonical`, `openGraph`, and `twitter` (summary_large_image) blocks.
 - `app/opengraph-image.tsx` generates a branded 1200×630 social-preview image on the fly via `next/og` — no static asset needed, auto-applied to all pages' `og:image`.
 - `lib/site.ts` holds `SITE_URL` as the single source of truth (currently the Vercel subdomain) — **update this the moment the `tyreoncloud.app` custom domain (TO-DO #10) is attached**, everything else (canonical URLs, sitemap, OG) derives from it.
@@ -178,8 +191,11 @@ Retail (B2C) checkout is fully built, no payment-gateway account needed (bank tr
 - Verified end-to-end with Playwright: add-to-cart → drawer → checkout form → order created in DB with correct server-computed totals and product snapshot → confirmation screen. Test order deleted after verification.
 - **Still not done**: no "my orders" history page for logged-in customers (RLS already supports it, just needs a UI), no order-status admin view (use Supabase Table Editor on `orders`/`order_items` for now), dealer ordering is still the quoting/RFQ workflow via the dealer matrix + LINE (intentionally out of scope — it's a B2B quoting tool, not a self-serve checkout).
 
-### 8. Connect GitHub to Vercel for Auto-Deploy
-Currently deploys via manual CLI only (`npx vercel --prod --scope team793s-projects --yes`, after `vercel login` once). Push `tirehub/` to GitHub and connect the repo in the Vercel dashboard for deploy-on-push.
+### 8. Connect GitHub to Vercel for Auto-Deploy — ✅ Done (2026-06-23)
+GitHub repo `team793/tyre-on-cloud` created (it didn't exist before, despite `git remote` pointing at it), connected in the Vercel dashboard (Settings → Git), production branch = `master`. **`git push` now auto-deploys to production within ~40s** — no more manual `vercel --prod` needed day-to-day (it still works as a fallback if ever needed).
+- First push was blocked by GitHub's secret-scanning push protection: two early commits had a live-looking Vercel access token in a long-deleted `CONTINUE-HERE.md`. Fixed by pushing a single clean squashed commit instead of full history.
+- **Your full original local commit history (40+ commits) is preserved forever under the git tag `backup-full-history-2026-06-23`** — run `git log backup-full-history-2026-06-23` to see it. Nothing was lost; only what got uploaded to GitHub changed.
+- **Still needs doing: rotate that exposed Vercel access token** (Vercel dashboard → Settings → Tokens → delete the old one, create a new one if still needed for CLI deploys). Flagged multiple times this session, not yet confirmed done — check first thing next session.
 
 ### 9. Dealer Matrix Mobile Layout — ✅ Done (2026-06-23)
 Below the `lg` breakpoint, `DealerMatrix` now renders `DealerCard` (new component, card-based) instead of the 10-column table. The table is unchanged and still shown at `lg`+ (horizontally scrollable, first column pinned via `sticky left-0`). Keyboard up/down navigation between qty fields works independently in each layout (separate ref arrays so a hidden layout's inputs never steal focus).
@@ -206,11 +222,17 @@ DIRECT_URL=
 # Start local dev server
 npm run dev
 
+# Deploy: just commit + push — Vercel auto-deploys master within ~40s
+git push
+
+# (Fallback) deploy directly without going through GitHub
+npx vercel --prod --scope team793s-projects --yes
+
 # Re-import stock from new ERP file
 node scripts/import-stock.mjs "path/to/new-file.csv"
 
-# Deploy to production (after `vercel login` once)
-npx vercel --prod --scope team793s-projects --yes
+# Run a new migration file against the live DB
+node --env-file=.env.local scripts/migrate.mjs 000X_filename.sql
 
 # Check TypeScript / build errors
 npm run build
@@ -226,6 +248,10 @@ npm run db:studio
 2. Say: **"read PROGRESS.md and let's continue"**
 3. Name the TO DO number you want to work on
 
+**Two open items worth raising even if not explicitly asked:**
+- Rotate the exposed Vercel access token (see TO-DO #8) — flagged repeatedly, not yet confirmed done.
+- Real prices are still all ฿0 — TO-DO #1 is ready whenever the ERP price file is available.
+
 ---
 
 ## Useful Links
@@ -233,7 +259,8 @@ npm run db:studio
 | Resource | URL |
 |---|---|
 | Live website | https://tyreoncloud-team793s-projects.vercel.app |
-| Vercel dashboard | https://vercel.com/team793s-projects/tirehub |
+| GitHub repo | https://github.com/team793/tyre-on-cloud |
+| Vercel dashboard | https://vercel.com/team793s-projects/tyreoncloud |
 | Supabase dashboard | https://supabase.com/dashboard/project/ognoyinorqkthcjcabiy |
 | Supabase Table Editor | https://supabase.com/dashboard/project/ognoyinorqkthcjcabiy/editor |
 | Supabase SQL Editor | https://supabase.com/dashboard/project/ognoyinorqkthcjcabiy/sql/new |

@@ -140,7 +140,7 @@ export function Hero() {
           initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.97 }}
           animate={prefersReducedMotion ? undefined : { opacity: 1, scale: 1 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-          className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-ink-700 bg-ink-900 lg:aspect-[3/4] lg:max-h-[560px]"
+          className="relative aspect-[4/3] min-h-[460px] w-full overflow-hidden rounded-2xl border border-ink-700 bg-ink-900 lg:aspect-[3/4] lg:max-h-[560px] lg:min-h-0"
         >
           <HeroBrandBanner lang={lang} />
         </motion.div>

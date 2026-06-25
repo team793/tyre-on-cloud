@@ -1,6 +1,6 @@
 # Tyre on Cloud — Project Progress
 
-Last updated: 2026-06-25 (QA pass — see "Bugs fixed" below)
+Last updated: 2026-06-25 (end of session — QA pass + TyreFinder mock data fixes, see "Bugs fixed" and TO-DO #4 below)
 Live site: https://tyreoncloud-team793s-projects.vercel.app
 Supabase project: https://supabase.com/dashboard/project/ognoyinorqkthcjcabiy
 
@@ -45,6 +45,10 @@ A full click-through QA pass (homepage, TyreFinder, shop retail/dealer, cart, ch
 | 15 stale `tirehub-*` Vercel deployments + 2 old aliases deleted (pre-rename leftovers) | ✅ Done |
 | Dealer header now says "Tyre on Cloud" (was "B2B Authorized Dealer Matrix") | ✅ Done |
 | Hero brand banner card fixed — was clipping content on short mobile viewports | ✅ Done |
+| Size-search deep links wired up — `width`/`profile`/`rimSize` URL params actually filter the shop now (were silently ignored before) | ✅ Done |
+| Mobile nav overlay fixed — could block the whole desktop site after a resize/rotate while open | ✅ Done |
+| TyreFinder plate lookup — Thai-format mock data now matches the Thai-format placeholder (was UK format, could never match) | ✅ Done |
+| TyreFinder vehicle list rebalanced to actual Thai market (Toyota/Honda/Isuzu/Mazda/Mitsubishi/Nissan/Ford/Suzuki incl. pickups), was mostly BMW/Audi | ✅ Done |
 
 ### Components
 

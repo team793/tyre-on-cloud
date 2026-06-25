@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useShopStore } from '@/stores/shopStore';
 import { useProducts } from '@/hooks/useProducts';
 import { RetailFilterPanel } from './filters/RetailFilterPanel';
@@ -8,8 +9,17 @@ import { RetailProductCard } from './RetailProductCard';
 
 export function RetailView() {
   const filters = useShopStore((s) => s.retailFilters);
+  const searchParams = useSearchParams();
 
-  const { data, isLoading, isError } = useProducts();
+  const width = searchParams.get('width');
+  const profile = searchParams.get('profile');
+  const rimSize = searchParams.get('rimSize');
+
+  const { data, isLoading, isError } = useProducts({
+    width: width ? Number(width) : undefined,
+    profile: profile ? Number(profile) : undefined,
+    rimSize: rimSize ? Number(rimSize) : undefined,
+  });
   const allProducts = data?.products ?? [];
 
   const filteredProducts = useMemo(() => {

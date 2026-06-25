@@ -57,7 +57,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="th">
+    <html lang="th" data-scroll-behavior="smooth">
       <body
         className={`${spaceGrotesk.variable} ${manrope.variable} ${plexMono.variable} font-body bg-ink-950 text-chalk-100`}
       >

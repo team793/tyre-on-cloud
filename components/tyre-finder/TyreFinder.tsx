@@ -126,7 +126,7 @@ function SizeTab({ finder }: { finder: UseTyreFinderReturn }) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       <FinderField label={t.finder.width}>
-        <Select value={size.width ? String(size.width) : undefined} onValueChange={(v) => setWidth(Number(v))}>
+        <Select value={size.width ? String(size.width) : ''} onValueChange={(v) => setWidth(Number(v))}>
           <SelectTrigger><SelectValue placeholder={t.finder.selectWidth} /></SelectTrigger>
           <SelectContent>
             {WIDTHS.map((w) => (
@@ -138,7 +138,7 @@ function SizeTab({ finder }: { finder: UseTyreFinderReturn }) {
 
       <FinderField label={t.finder.profile}>
         <Select
-          value={size.profile ? String(size.profile) : undefined}
+          value={size.profile ? String(size.profile) : ''}
           onValueChange={(v) => setProfile(Number(v))}
           disabled={!size.width}
         >
@@ -155,7 +155,7 @@ function SizeTab({ finder }: { finder: UseTyreFinderReturn }) {
 
       <FinderField label={t.finder.rimSize}>
         <Select
-          value={size.rimSize ? String(size.rimSize) : undefined}
+          value={size.rimSize ? String(size.rimSize) : ''}
           onValueChange={(v) => setRimSize(Number(v))}
           disabled={!size.profile}
         >
@@ -180,7 +180,7 @@ function VehicleTab({ finder }: { finder: UseTyreFinderReturn }) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <FinderField label={t.finder.year}>
-        <Select value={vehicle.year ? String(vehicle.year) : undefined} onValueChange={(v) => setYear(Number(v))}>
+        <Select value={vehicle.year ? String(vehicle.year) : ''} onValueChange={(v) => setYear(Number(v))}>
           <SelectTrigger><SelectValue placeholder={t.finder.selectYear} /></SelectTrigger>
           <SelectContent>
             {availableYears.map((y) => (
@@ -191,7 +191,7 @@ function VehicleTab({ finder }: { finder: UseTyreFinderReturn }) {
       </FinderField>
 
       <FinderField label={t.finder.make}>
-        <Select value={vehicle.make ?? undefined} onValueChange={setMake} disabled={!vehicle.year}>
+        <Select value={vehicle.make ?? ''} onValueChange={setMake} disabled={!vehicle.year}>
           <SelectTrigger>
             <SelectValue placeholder={vehicle.year ? t.finder.selectMake : t.finder.selectYearFirst} />
           </SelectTrigger>
@@ -204,7 +204,7 @@ function VehicleTab({ finder }: { finder: UseTyreFinderReturn }) {
       </FinderField>
 
       <FinderField label={t.finder.model}>
-        <Select value={vehicle.model ?? undefined} onValueChange={setModel} disabled={!vehicle.make}>
+        <Select value={vehicle.model ?? ''} onValueChange={setModel} disabled={!vehicle.make}>
           <SelectTrigger>
             <SelectValue placeholder={vehicle.make ? t.finder.selectModel : t.finder.selectMakeFirst} />
           </SelectTrigger>
@@ -217,7 +217,7 @@ function VehicleTab({ finder }: { finder: UseTyreFinderReturn }) {
       </FinderField>
 
       <FinderField label={t.finder.option}>
-        <Select value={vehicle.option ?? undefined} onValueChange={setOption} disabled={!vehicle.model}>
+        <Select value={vehicle.option ?? ''} onValueChange={setOption} disabled={!vehicle.model}>
           <SelectTrigger>
             <SelectValue placeholder={vehicle.model ? t.finder.selectOption : t.finder.selectModelFirst} />
           </SelectTrigger>

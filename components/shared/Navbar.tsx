@@ -104,7 +104,7 @@ export function Navbar() {
 
       {/* Mobile overlay */}
       {open && (
-        <div className="fixed inset-0 z-50 flex flex-col bg-ink-950">
+        <div className="fixed inset-0 z-50 flex flex-col bg-ink-950 md:hidden">
           <div className="flex items-center justify-between border-b border-ink-700 px-5 py-3.5">
             <Link href="/" onClick={() => setOpen(false)} aria-label="Tyre on Cloud">
               <Logo size="md" />

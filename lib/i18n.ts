@@ -213,7 +213,7 @@ const translations = {
       selectOption: 'Select option',
       selectModelFirst: 'Select model first',
       plateLabel: 'Registration number',
-      platePlaceholder: 'e.g. AB12 CDE',
+      platePlaceholder: 'e.g. กข 1234',
       lookUp: 'Look up',
       searching: 'Searching…',
       notFound: "Couldn't match that registration. Try",
